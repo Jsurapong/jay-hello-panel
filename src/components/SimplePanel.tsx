@@ -31,6 +31,10 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
   const styles = useStyles2(getStyles);
   let color = theme.visualization.getColorByName(options.color);
 
+  const radii = data.series
+    .map((series) => series.fields.find((field) => field.type === 'number'))
+    .map((field) => field?.values.get(field.values.length - 1));
+
   return (
     <div
       className={cx(
@@ -49,8 +53,11 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
         xmlnsXlink="http://www.w3.org/1999/xlink"
         viewBox={`-${width / 2} -${height / 2} ${width} ${height}`}
       >
-        <g>
-          <circle style={{ fill: color }} r={100} />
+        <g fill={color}>
+          {radii.map((radius, index) => {
+            const step = width / radii.length;
+            return <circle key={index} r={radius} transform={`translate(${index * step + step / 2}, 0)`} />;
+          })}
         </g>
       </svg>
 
